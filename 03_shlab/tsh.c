@@ -175,7 +175,6 @@ void eval(char *cmdline)
   char buf[MAXLINE];
   int bg;
   pid_t pid;
-  struct job_t *j_id;
 
   strcpy(buf, cmdline);
   bg = parseline(buf, argv);
@@ -201,8 +200,8 @@ void eval(char *cmdline)
         unix_error("waitfg: waitpid error");
     }
     else {
-    j_id = pid2jid(pid);
-    printf("[%d] (%d) %s", j_id->jid, j_id->pid,argv[0]); 
+      int idx = pid2jid(pid);
+      printf("[%d] (%d) %s", jobs[idx].jid, jobs[idx].pid,argv[0]); 
     }
   }else
     builtin_cmd(argv);
