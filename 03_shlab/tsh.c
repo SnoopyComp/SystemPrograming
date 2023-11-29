@@ -186,13 +186,13 @@ void eval(char *cmdline)
     pid = fork();
     printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
     if(pid==0){
-      // exit(0);
-      // printf("  ##child\n"); //###################
+      printf("  ##child\n"); //###################
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
         deletejob(jobs, getpid());
         exit(0);
       }
+      exit(0);
     }
     else if(pid<0){
       printf("  ##fork error\n");
