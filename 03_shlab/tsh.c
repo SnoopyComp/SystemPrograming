@@ -183,7 +183,7 @@ void eval(char *cmdline)
     return;
 
   printf("first argv : %s\n",argv[0]); //##################
-  if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && !strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
+  if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
     if((pid=fork())==0){
       printf("child\n"); //################
       if(execve(argv[0],argv,environ)<0){
