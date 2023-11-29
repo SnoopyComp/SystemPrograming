@@ -175,7 +175,7 @@ void eval(char *cmdline)
   char buf[MAXLINE];
   int bg;
   pid_t pid;
-  job_t *j_id;
+  struct job_t *j_id;
 
   strcpy(buf, cmdline);
   bg = parseline(buf, argv);
