@@ -272,6 +272,8 @@ int builtin_cmd(char **argv)
   printf("##get built in %s\n",argv[0]); //########################
   if(!strcmp(argv[0],"quit"))
     exit(0);
+  else if(!strcmp(argv[0],"jobs"))
+    listjobs(jobs);
   return 0;     /* not a builtin command */
 }
 
