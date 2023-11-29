@@ -182,27 +182,19 @@ void eval(char *cmdline)
 
   if (argv[0] == NULL)
     return;
-int tmp;
   // printf("  ##first argv : %s\n",argv[0]); //##################
-  if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
+  if(builtin_cmd(argv)){
     pid = fork();
     printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
     if(pid==0){
-      printf("  ##child\n"); //###################
-      scanf("%d",&tmp);
-      newprint(tmp);
-      // exit(0);
-      // fflush(stdout);
-
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
         deletejob(jobs, getpid());
         exit(0);
       }
     }
-    else if(pid<0){
-      printf("  ##fork error\n");
-    }
+    else if(pid<0)
+      unix_error("fork error");
     else
       printf("  ##parent\n"); //##################
 
@@ -215,8 +207,7 @@ int tmp;
       addjob(jobs,pid,bg,cmdline);
       printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
     }
-  }else
-    builtin_cmd(argv);
+  }
   return;
 }
 
@@ -288,8 +279,18 @@ int builtin_cmd(char **argv)
     deletejob(jobs, getpid());
     exit(0);
   }
-  else if(!strcmp(argv[0],"jobs"))
+  else if(!strcmp(argv[0],"jobs")){
     listjobs(jobs);
+    return 1;
+  }
+  else if(!strcmp(argv[0],"fg")){
+    return 1;
+  }
+  else if(!strcmp(argv[0],"bg")){
+    return 1;
+  }
+  
+
   return 0;     /* not a builtin command */
 }
 
@@ -496,7 +497,7 @@ void listjobs(struct job_t *jobs)
           printf("listjobs: Internal error: job[%d].state=%d ",
               i, jobs[i].state);
       }
-      printf("%s\n", jobs[i].cmdline);
+      printf("%s", jobs[i].cmdline);
     }
   }
 }
