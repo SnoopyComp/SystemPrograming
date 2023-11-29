@@ -39,7 +39,7 @@
 /* Global variables */
 extern char **environ;      /* defined in libc */
 char prompt[] = "tsh> ";    /* command line prompt (DO NOT CHANGE) */
-int verbose = 0;            /* if true, print additional output */
+int verbose = 1;            /* if true, print additional output */
 int nextjid = 1;            /* next job ID to allocate */
 char sbuf[MAXLINE];         /* for composing sprintf messages */
 
@@ -181,10 +181,10 @@ void eval(char *cmdline)
   if (argv[0] == NULL)
     return;
 
-  printf("  ##first argv : %s\n",argv[0]); //##################
+  // printf("  ##first argv : %s\n",argv[0]); //##################
   if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
     pid = fork();
-    printf("  ##fork here\n");//######################3
+    printf("  ##fork here %d\n",pid);//######################3
     if(pid==0){
       printf("  ##child\n"); //###################
       addjob(jobs,getpid(),1,argv[0]);
@@ -206,7 +206,7 @@ void eval(char *cmdline)
         unix_error("waitfg: waitpid error");
     }
     else {
-      addjob(jobs,getpid(),1,argv[0]);
+      addjob(jobs,pid,2,cmdline);
       printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
     }
   }else
