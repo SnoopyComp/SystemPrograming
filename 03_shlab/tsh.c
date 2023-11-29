@@ -133,7 +133,6 @@ int main(int argc, char **argv)
 
   /* Initialize the job list */
   initjobs(jobs);
-  addjob(jobs,getpid(),1,argv[0]);
   /* Execute the shell's read/eval loop */
   while (1) {
 
@@ -203,7 +202,7 @@ void eval(char *cmdline)
         unix_error("waitfg: waitpid error");
     }
     else 
-      printf("[%d] (%d) %s",maxjid(jobs)+1,getpid(),cmdline);
+      printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
   }else
     builtin_cmd(argv);
   return;
