@@ -185,13 +185,16 @@ void eval(char *cmdline)
   if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
     printf("  ##fork here\n");//######################3
     if((pid=fork())==0){
-      addjob(jobs,getpid(),1,argv[0]);
       printf("  ##child\n"); //###################
+      addjob(jobs,getpid(),1,argv[0]);
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
         deletejob(jobs, getpid());
         exit(0);
       }
+    }
+    else if(pid<0){
+      printf("fork error");
     }
     else
       printf("  ##parent\n"); //##################
