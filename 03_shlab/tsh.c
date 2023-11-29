@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 
   /* Initialize the job list */
   initjobs(jobs);
-
+  addjob(getpid());
   /* Execute the shell's read/eval loop */
   while (1) {
 
@@ -184,10 +184,13 @@ void eval(char *cmdline)
 
   printf("  ##first argv : %s\n",argv[0]); //##################
   if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
+    printf("  ##fork here\n");//######################3
     if((pid=fork())==0){
+      addjob(getpid());
       printf("  ##child\n"); //###################
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
+        deletejob(getpid());
         exit(0);
       }
     }
@@ -200,7 +203,7 @@ void eval(char *cmdline)
         unix_error("waitfg: waitpid error");
     }
     else 
-      printf("[%d] (%d) %s",maxjid(jobs)+1,pid,cmdline);
+      printf("[%d] (%d) %s",maxjid(jobs)+1,getpid(),cmdline);
   }else
     builtin_cmd(argv);
   return;
@@ -270,8 +273,10 @@ int parseline(const char *cmdline, char **argv)
 int builtin_cmd(char **argv)
 {
   printf("  ##get built in %s\n",argv[0]); //########################
-  if(!strcmp(argv[0],"quit"))
+  if(!strcmp(argv[0],"quit")){
+    deletejob(getpid());
     exit(0);
+  }
   else if(!strcmp(argv[0],"jobs"))
     listjobs(jobs);
   return 0;     /* not a builtin command */
