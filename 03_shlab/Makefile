@@ -11,11 +11,22 @@ CFLAGS = -Wall -O2
 FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint
 
 all: $(FILES)
-comp_src: comp_myint comp_myspin comp_mysplit comp_mystop
-comp_myspin: gcc -o myspin myspin.c
-comp_mysplit: gcc -o mysplit mysplit.c
-comp_mystop: gcc -o mystop mystop.c
-comp_myint: gcc -o myint myint.c
+
+SOURCE_FILES = myspin.c mysplit.c mystop.c myint.c
+OBJECT_FILES = $(SOURCE_FILES:.c=.o)
+EXECUTABLE = example_program
+
+comp_src: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECT_FILES)
+	$(CC) $(CFLAGS) -o $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -f $(OBJECT_FILES) $(EXECUTABLE)
+
 
 ##################
 # Regression tests
