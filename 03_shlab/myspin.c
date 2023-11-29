@@ -18,7 +18,9 @@ int main(int argc, char **argv)
 	exit(0);
     }
     secs = atoi(argv[1]);
-    for (i=0; i < secs; i++)
+    for (i=0; i < secs; i++){
+        printf("##sleep\n");//###############
 	sleep(1);
+    }
     exit(0);
 }

@@ -23,8 +23,10 @@ int main(int argc, char **argv)
 
 
     if (fork() == 0) { /* child */
-	for (i=0; i < secs; i++)
+	for (i=0; i < secs; i++){
+        printf("##child is sleep\n"); //##########################
 	    sleep(1);
+    }
 	exit(0);
     }
 
