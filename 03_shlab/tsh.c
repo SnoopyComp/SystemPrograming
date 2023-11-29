@@ -205,8 +205,10 @@ void eval(char *cmdline)
       if(waitpid(pid, &status, 0)<0)
         unix_error("waitfg: waitpid error");
     }
-    else 
+    else {
+      addjob(jobs,getpid(),1,argv[0]);
       printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
+    }
   }else
     builtin_cmd(argv);
   return;
