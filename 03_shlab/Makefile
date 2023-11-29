@@ -11,6 +11,11 @@ CFLAGS = -Wall -O2
 FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint
 
 all: $(FILES)
+comp_src: comp_myint comp_myspin comp_mysplit comp_mystop
+comp_myspin: CC -o myspin myspin.c
+comp_mysplit: CC -o mysplit mysplit.c
+comp_mystop: CC -o mystop mystop.c
+comp_myint: CC -o myint myint.c
 
 ##################
 # Regression tests
