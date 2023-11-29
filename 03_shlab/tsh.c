@@ -199,10 +199,8 @@ void eval(char *cmdline)
       if(waitpid(pid, &status, 0)<0)
         unix_error("waitfg: waitpid error");
     }
-    else {
-      int idx = pid2jid(pid);
-      printf("[%d] (%d) %s", jobs[idx].jid, jobs[idx].pid,argv[0]); 
-    }
+    else 
+      printf("[%d] (%d) %s",pid2jid(pid)+1,getpid,cmdline);
   }else
     builtin_cmd(argv);
   return;
@@ -461,7 +459,7 @@ int pid2jid(pid_t pid)
 void listjobs(struct job_t *jobs)
 {
   int i;
-  printf("##run listjobs \n"); //##############################
+
   for (i = 0; i < MAXJOBS; i++) {
     if (jobs[i].pid != 0) {
       printf("[%d] (%d) ", jobs[i].jid, jobs[i].pid);
