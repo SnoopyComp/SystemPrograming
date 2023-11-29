@@ -187,7 +187,6 @@ void eval(char *cmdline)
     printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
     if(pid==0){
       printf("  ##child\n"); //###################
-      addjob(jobs,getpid(),1,argv[0]);
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
         deletejob(jobs, getpid());
@@ -206,7 +205,7 @@ void eval(char *cmdline)
         unix_error("waitfg: waitpid error");
     }
     else {
-      addjob(jobs,pid,2,cmdline);
+      addjob(jobs,pid,bg,cmdline);
       printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
     }
   }else
