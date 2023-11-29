@@ -183,8 +183,9 @@ void eval(char *cmdline)
 
   printf("  ##first argv : %s\n",argv[0]); //##################
   if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
+    pid = fork();
     printf("  ##fork here\n");//######################3
-    if((pid=fork())==0){
+    if(pid==0){
       printf("  ##child\n"); //###################
       addjob(jobs,getpid(),1,argv[0]);
       if(execve(argv[0],argv,environ)<0){
@@ -194,7 +195,7 @@ void eval(char *cmdline)
       }
     }
     else if(pid<0){
-      printf("fork error");
+      printf("  ##fork error\n");
     }
     else
       printf("  ##parent\n"); //##################
