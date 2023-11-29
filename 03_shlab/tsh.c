@@ -181,6 +181,8 @@ void eval(char *cmdline)
 
   if (argv[0] == NULL)
     return;
+
+  printf("first argv : %s\n",argv[0]); //##################
   if(strcmp(argv[0],"quit") && !strcmp(argv[0],"fg") && !strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
     if((pid=fork())==0){
       if(execve(argv[0],argv,environ)<0){
@@ -265,6 +267,7 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv)
 {
+  printf("get built in %s\n",argv[0]); //########################
   if(!strcmp(argv[0],"quit"))
     exit(0);
   return 0;     /* not a builtin command */
