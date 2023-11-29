@@ -200,7 +200,7 @@ void eval(char *cmdline)
         unix_error("waitfg: waitpid error");
     }
     else 
-      printf("%d %s",pid,cmdline);
+      listjobs(jobs);
   }else
     builtin_cmd(argv);
   return;
