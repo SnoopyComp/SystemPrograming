@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 
   /* Initialize the job list */
   initjobs(jobs);
-  addjob(getpid());
+  addjob(jobs,getpid(),1,argv[0]);
   /* Execute the shell's read/eval loop */
   while (1) {
 
@@ -186,7 +186,7 @@ void eval(char *cmdline)
   if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
     printf("  ##fork here\n");//######################3
     if((pid=fork())==0){
-      addjob(getpid());
+      addjob(jobs,getpid(),1,argv[0]);
       printf("  ##child\n"); //###################
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
