@@ -202,7 +202,7 @@ void eval(char *cmdline)
     }
     else {
     j_id = pid2jid(pid);
-    printf("[%d] (%d) %s", j_id.jid, j_id.pid,argv[0]); 
+    printf("[%d] (%d) %s", j_id->jid, j_id->pid,argv[0]); 
     }
   }else
     builtin_cmd(argv);
