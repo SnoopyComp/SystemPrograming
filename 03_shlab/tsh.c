@@ -183,7 +183,7 @@ void eval(char *cmdline)
   if (argv[0] == NULL)
     return;
   // printf("  ##first argv : %s\n",argv[0]); //##################
-  if(builtin_cmd(argv)){
+  if(!builtin_cmd(argv)){
     pid = fork();
     printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
     if(pid==0){
