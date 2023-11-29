@@ -200,7 +200,7 @@ void eval(char *cmdline)
         unix_error("waitfg: waitpid error");
     }
     else 
-      printf("[%d] (%d) %s",pid2jid(pid)+1,getpid,cmdline);
+      printf("[%d] (%d) %s",pid2jid(pid)+1,pid,cmdline);
   }else
     builtin_cmd(argv);
   return;
