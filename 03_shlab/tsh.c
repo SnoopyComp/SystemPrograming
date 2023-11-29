@@ -171,6 +171,34 @@ int main(int argc, char **argv)
  */
 void eval(char *cmdline)
 {
+  char *argv[MAXARGS];
+  char buf[MAXLINE];
+  int bg;
+  pdi_t pid;
+
+  strcpy(buf, cmdline);
+  bg = parseline(buf, argv);
+
+  if (argv[0] == NULL)
+    return;
+  if(strcmp(argv[0],"quit") && !strcmp(argv[0],"fg") && !strcmp(argv[0],"bg") && strcmp(argv[0],jobs)){
+    if((pid=Fork())==0){
+      if(execve(argv[0],argv,environ)<0){
+        printf("%s: Command not found.\n", argv[0]);
+        exit(0);
+      }
+    }
+
+    if(!bd){
+      int status;
+      if(waitpid(pid, &status, 0)<0)
+        unix_error("waitfg: waitpid error");
+    }
+    else 
+      printf("%d %d",pid,cmdline);
+  }
+  else
+    builtin_cmd(argv);
   return;
 }
 
@@ -237,6 +265,8 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv)
 {
+  if(!strcmp(argv[0],"quit"))
+    exit(0);
   return 0;     /* not a builtin command */
 }
 
