@@ -13,7 +13,7 @@ FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint
 all: $(FILES)
 
 SOURCE_FILES = myspin.c mysplit.c mystop.c myint.c
-OBJECT_FILES = $(SOURCE_FILES:.c=.o)
+OBJECT_FILES = $(SOURCE_FILES:.c=)
 EXECUTABLE = example_program
 
 comp_src: $(EXECUTABLE)
