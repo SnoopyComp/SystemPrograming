@@ -180,15 +180,16 @@ void eval(char *cmdline)
 
   if (argv[0] == NULL)
     return;
-
+int tmp;
   // printf("  ##first argv : %s\n",argv[0]); //##################
   if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
     pid = fork();
     printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
     if(pid==0){
       printf("  ##child\n"); //###################
+      scanf("%d",&tmp);
       // exit(0);
-      fflush(stdout);
+      // fflush(stdout);
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
         deletejob(jobs, getpid());
