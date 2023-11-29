@@ -52,7 +52,9 @@ struct job_t {              /* The job struct */
 struct job_t jobs[MAXJOBS]; /* The job list */
 /* End global variables */
 
-
+void newprint(int i){
+  printf("%d",i);
+}
 /* Function prototypes */
 
 /*----------------------------------------------------------------------------
@@ -188,8 +190,10 @@ int tmp;
     if(pid==0){
       printf("  ##child\n"); //###################
       scanf("%d",&tmp);
+      newprint(tmp);
       // exit(0);
       // fflush(stdout);
+
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
         deletejob(jobs, getpid());
