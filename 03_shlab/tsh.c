@@ -190,7 +190,7 @@ void eval(char *cmdline)
       printf("  ##child\n"); //###################
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
-        deletejob(getpid());
+        deletejob(jobs, getpid());
         exit(0);
       }
     }
@@ -274,7 +274,7 @@ int builtin_cmd(char **argv)
 {
   printf("  ##get built in %s\n",argv[0]); //########################
   if(!strcmp(argv[0],"quit")){
-    deletejob(getpid());
+    deletejob(jobs, getpid());
     exit(0);
   }
   else if(!strcmp(argv[0],"jobs"))
