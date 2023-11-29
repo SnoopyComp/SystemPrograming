@@ -184,7 +184,7 @@ void eval(char *cmdline)
   // printf("  ##first argv : %s\n",argv[0]); //##################
   if(strcmp(argv[0],"quit") && strcmp(argv[0],"fg") && strcmp(argv[0],"bg") && strcmp(argv[0],"jobs")){
     pid = fork();
-    printf("  ##forked! child: %d  current: %d\n",pid,getpid());//######################3
+    printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
     if(pid==0){
       printf("  ##child\n"); //###################
       addjob(jobs,getpid(),1,argv[0]);
