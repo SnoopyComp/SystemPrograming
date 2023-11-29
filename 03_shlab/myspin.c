@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     }
     secs = atoi(argv[1]);
     for (i=0; i < secs; i++){
-        printf("##sleep\n");//###############
+        printf("@@sleep\n");//###############
 	sleep(1);
     }
     exit(0);

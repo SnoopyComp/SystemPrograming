@@ -24,12 +24,12 @@ int main(int argc, char **argv)
     secs = atoi(argv[1]);
 
     for (i=0; i < secs; i++){
-        printf("##sleep\n"); //#######################3
+        printf("@@sleep\n"); //#######################3
        sleep(1);
     }
 	
     pid = getpid(); 
-    printf("##pid is %d\n",pid);//#######################
+    printf("@@pid is %d\n",pid);//#######################
     if (kill(-pid, SIGTSTP) < 0)
        fprintf(stderr, "kill (tstp) error");
 
