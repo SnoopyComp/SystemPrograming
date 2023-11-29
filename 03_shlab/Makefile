@@ -24,7 +24,7 @@ $(EXECUTABLE): $(OBJECT_FILES)
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-clean:
+clear:
 	rm -f $(OBJECT_FILES) $(EXECUTABLE)
 
 
