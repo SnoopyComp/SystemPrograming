@@ -333,6 +333,8 @@ void sigchld_handler(int sig)
 
   if(WIFEXITED(status)){
     printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(chld_pid),chld_pid,sig);
+    deletejob(jobs,chld_pid);
+  }
   return;
 }
 
