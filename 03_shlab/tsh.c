@@ -349,7 +349,7 @@ void sigchld_handler(int sig)
   }
   else if(WIFSTOPPED(status)){
     printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
-    getjobpid(chld_pid)->state = ST;
+    getjobpid(jobs,chld_pid)->state = ST;
   }
   return;
 }
