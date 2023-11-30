@@ -178,7 +178,7 @@ void eval(char *cmdline)
   bg = parseline(buf, argv);
   sigset_t mask, prev_all;
 
-  sigemptyset(&mask)
+  sigemptyset(&mask);
   sigaddset(&mask,SIGINT);
   sigaddset(&mask,SIGCHLD);
   sigaddset(&mask,SIGTSTP);
@@ -194,7 +194,7 @@ void eval(char *cmdline)
   printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
   fflush(stdout);//####################3
   if(pid==0){
-    sigprocmask(SIG_SETMASK, &prev, NULL);
+    sigprocmask(SIG_SETMASK, &prev_all, NULL);
     if(execve(argv[0],argv,environ)<0){
       printf("%s: Command not found.\n", argv[0]);
       exit(1);
@@ -349,7 +349,7 @@ void sigchld_handler(int sig)
   }
   else if(WIFSTOPPED(status)){
     printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
-    chld_pid->state = ST;
+    chld_pid.state = ST;
   }
   return;
 }
