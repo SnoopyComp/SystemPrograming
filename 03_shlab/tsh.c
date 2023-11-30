@@ -186,7 +186,7 @@ void eval(char *cmdline)
   if (argv[0] == NULL)
     return;
   // printf("  ##first argv : %s\n",argv[0]); //##################
-   if( builtin_cmd(argv)){
+   if( !builtin_cmd(argv)){
 
   // sigprocmask(SIG_BLOCK, &mask, &prev_all);
   pid = fork();
