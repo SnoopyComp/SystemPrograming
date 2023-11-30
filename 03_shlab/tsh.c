@@ -370,7 +370,8 @@ void waitfg(pid_t pid)//?????????????????????????
 void sigchld_handler(int sig)
 {
   int status;
-  while ((chld_pid = waitpid(1, &status, WNOHANG | WUNTRACED)) > 0) {
+  pid_t pid;
+  while (( pid= waitpid(1, &status, WNOHANG | WUNTRACED)) > 0) {
   // chld_pid = wait(&status);
     struct job_t *job_ptr = getjobpid(jobs,chld_pid);
     if (WIFEXITED(status)) {
@@ -385,8 +386,8 @@ void sigchld_handler(int sig)
       getjobpid(jobs,chld_pid)->state = ST;
     }
   }
-  if(errno == ECHILD) 
-    return;
+  // if(errno == ECHILD) 
+  //   return;
 }
 
 /*
