@@ -336,7 +336,7 @@ void do_bgfg(char **argv)
 
   kill(-pid,SIGCONT);
   if(!strcmp(argv[0],"fg")){
-    job_ptr->stats = FG;
+    job_ptr->state = FG;
     waitfg(pid);
   }else{
     job_ptr->state = BG;
