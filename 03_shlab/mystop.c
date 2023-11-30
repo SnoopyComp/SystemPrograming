@@ -29,7 +29,6 @@ int main(int argc, char **argv)
     }
 	
     pid = getpid(); 
-    printf("@@pid is %d\n",pid);//#######################
     if (kill(-pid, SIGTSTP) < 0)
        fprintf(stderr, "kill (tstp) error");
 

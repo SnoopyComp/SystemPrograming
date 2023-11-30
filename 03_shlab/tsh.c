@@ -148,8 +148,8 @@ void eval(char *cmdline)
 {
   char *argv[MAXARGS];
   // char buf[MAXLINE];
-  int bg;
   pid_t pid;  
+  int bg;
   // strcpy(buf, cmdline);
   bg = parseline(cmdline, argv);
   // sigset_t mask, prev_all;
@@ -481,7 +481,7 @@ int pid2jid(pid_t pid)
 /* listjobs - Print the job list */
 void listjobs(struct job_t *jobs)
 {
-  printf("  ##start listing job\n"); //#######################3
+  // printf("  ##start listing job\n"); //#######################3
   int i;
   for (i = 0; i < MAXJOBS; i++) {
     if (jobs[i].pid != 0) {
