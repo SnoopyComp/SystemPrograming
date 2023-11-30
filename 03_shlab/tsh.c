@@ -187,7 +187,7 @@ void eval(char *cmdline)
     return;
   // printf("  ##first argv : %s\n",argv[0]); //##################
   if( builtin_cmd(argv))
-  return;
+    return;
   sigset_t mask = {};
   sigemptyset(&mask);
   sigaddset(&mask,SIGCHLD);
@@ -279,7 +279,6 @@ int builtin_cmd(char **argv)
 {
   printf("  ##get built in %s\n",argv[0]); //########################
   if(!strcmp(argv[0],"quit")){
-    deletejob(jobs, getpid());
     exit(0);
     return 1;
   }
@@ -313,25 +312,25 @@ void do_bgfg(char **argv)
     int jobid = atoi(p+1);
     job_ptr = getjobjid(jobs,jobid);
   
-    if(!job_ptr){
-      printf("%%%d: No such job\n",jobid);
-      return;
-    }
+    // if(!job_ptr){
+    //   printf("%%%d: No such job\n",jobid);
+    //   return;
+    // }
     pid = job_ptr->pid;
   }else if (isdigit(argv[1][0])){
     pid = atoi(argv[1]);
     job_ptr = getjobpid(jobs,pid);
 
-    if(!job_ptr){
-      printf("(%d): No such process\n",pid);
-      return;
-    }
-  }else{
-    printf("%s: err\n",argv[0]);
-    return;
+    // if(!job_ptr){
+    //   printf("(%d): No such process\n",pid);
+    //   return;
+    // }
+  // }else{
+  //   printf("%s: err\n",argv[0]);
+  //   return;
   }
 
-  kill(pid,SIGCONT);
+  kill(-pid,SIGCONT);
   if(!strcmp(argv[0],"fg")){
     job_ptr->state = FG;
     waitfg(pid);
@@ -351,8 +350,8 @@ void waitfg(pid_t pid)//?????????????????????????
   if (!job_ptr) 
     return;
   // Busy wait until p_job goes to background or finishes
-  while (job_ptr->state == FG) { sleep(1); }
-  return;
+  while (job_ptr->state == FG)
+  sleep(1);
 }
 
 /*****************
@@ -368,7 +367,6 @@ void waitfg(pid_t pid)//?????????????????????????
  */
 void sigchld_handler(int sig)
 {
-  int olderrno = errno;
   int status;
   while ((chld_pid = waitpid(1, &status, WNOHANG | WUNTRACED)) > 0) {
   // chld_pid = wait(&status);
