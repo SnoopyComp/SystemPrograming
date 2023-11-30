@@ -334,7 +334,7 @@ void do_bgfg(char **argv)
     return;
   }
 
-  kill(-pid,SIGCONT);
+  kill(pid,SIGCONT);
   if(!strcmp(argv[0],"fg")){
     job_ptr->state = FG;
     waitfg(pid);
@@ -373,7 +373,7 @@ void sigchld_handler(int sig)
 {
   int olderrno = errno;
   int status;
-  while ((chld_pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
+  while ((chld_pid = waitpid(1, &status, WNOHANG | WUNTRACED)) > 0) {
   // chld_pid = wait(&status);
     struct job_t *job_ptr = getjobpid(jobs,chld_pid);
     if (WIFEXITED(status)) {
@@ -401,7 +401,7 @@ void sigint_handler(int sig)
   pid_t tmp = fgpid(jobs);
   if(!tmp)
     return;
-  if(kill(-tmp,SIGINT)==-1)
+  if(kill(tmp,SIGINT)==-1)
     unix_error("Failed to send SIGINT signal"); 
 }
 
@@ -415,7 +415,7 @@ void sigtstp_handler(int sig)
   pid_t tmp = fgpid(jobs);
   if(!tmp)
     return;
-  if(kill(-tmp,SIGTSTP)==-1)
+  if(kill(tmp,SIGTSTP)==-1)
     unix_error("Failed to send SIGINT signal"); }
 
 /*********************
