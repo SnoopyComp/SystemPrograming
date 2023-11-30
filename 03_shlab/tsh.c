@@ -39,7 +39,7 @@
 /* Global variables */
 extern char **environ;      /* defined in libc */
 char prompt[] = "tsh> ";    /* command line prompt (DO NOT CHANGE) */
-int verbose = 1;            /* if true, print additional output */
+int verbose = 0;            /* if true, print additional output */
 int nextjid = 1;            /* next job ID to allocate */
 char sbuf[MAXLINE];         /* for composing sprintf messages */
 
@@ -189,6 +189,7 @@ void eval(char *cmdline)
   if(!builtin_cmd(argv)){
     pid = fork();
     printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
+    fflush(stdout);
     if(pid==0){
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
@@ -338,8 +339,7 @@ void sigint_handler(int sig)
 {
   struct job_t *jptr = getjobpid(jobs,fgpid(jobs));
   printf("Job [%d] (%d) terminated by signal %d\n",jptr->jid,jptr->pid,sig);
-  fflush(stdout);
-  exit(0);
+  _exit(0);
 }
 
 /*
