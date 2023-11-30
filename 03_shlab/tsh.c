@@ -309,12 +309,12 @@ int builtin_cmd(char **argv)
 void do_bgfg(char **argv)
 {
   int pid;
-  job_t *job_ptr;
+  struct job_t *job_ptr;
 
   char *p = strstr(argv[1],"%");
   if(p){
     int jobid = atoi(p+1);
-    job_ptr = getjobjid(jobid);
+    job_ptr = getjobjid(jobs,jobid);
   
     if(!job_ptr){
       printf("%%%d: No such job\n",jobid);
@@ -323,7 +323,7 @@ void do_bgfg(char **argv)
     pid = p_job->pid;
   }else if (isdigit(argv[1][0])){
     pid = atoi(argv[1]);
-    job_ptr = getjobpid(pid);
+    job_ptr = getjobpid(jobs,pid);
 
     if(!p_job){
       printf("(%d): No such process\n",pid);
