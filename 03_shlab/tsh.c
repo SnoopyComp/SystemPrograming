@@ -351,8 +351,9 @@ void waitfg(pid_t pid)//?????????????????????????
   if (!job_ptr) 
     return;
   // Busy wait until p_job goes to background or finishes
-  // while (job_ptr->state == FG)
-  // sleep(1);
+  while (job_ptr->state == FG){
+    sleep(1);
+  }
 }
 
 /*****************
@@ -368,23 +369,40 @@ void waitfg(pid_t pid)//?????????????????????????
  */
 void sigchld_handler(int sig)
 {
-  int status;
-  while ((chld_pid = waitpid(1, &status, WNOHANG | WUNTRACED)) > 0) {
-  // chld_pid = wait(&status);
-    struct job_t *job_ptr = getjobpid(jobs,chld_pid);
+ int status;
+  pid_t pid;
+  while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
+    // Check how given process is terminated or stopped
+    struct job_t *p_job = getjobpid(jobs,pid);
+
     if (WIFEXITED(status)) {
-        deletejob(jobs,chld_pid);
-      }
-    else if(WIFSIGNALED(status)){
-      printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
-      deletejob(jobs,chld_pid);
-    }
-    else if(WIFSTOPPED(status)){
-      printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
-      getjobpid(jobs,chld_pid)->state = ST;
+      // Exited normally, print no message
+      deletejob(jobs,pid);
+    } else if (WIFSIGNALED(status)) {
+      // Terminated with signal
+      printf("Job [%d] (%d) terminated by signal 2\n", p_job->jid, p_job->pid);
+      deletejob(jobs,pid);
+    } else if (WIFSTOPPED(status)) {
+      // Stopped by signal
+      printf("Job [%d] (%d) stopped by signal 20\n", p_job->jid, p_job->pid);
+      p_job->state = ST;
     }
   }
-  return;
+  if (errno == ECHILD) { return; }
+}
+
+// Catch ^C (SIGINT) and send it to the foreground job.
+void sigint_handler(int sig) {
+  pid_t pid = fgpid();
+  if (!pid) { return; }
+  check(kill(-pid, SIGINT), "Failed to send SIGINT signal");
+}
+
+// Catch ^Z (SIGTSTP) and send it to the foreground job.
+void sigtstp_handler(int sig) {
+  pid_t pid = fgpid();
+  if (!pid) { return; }
+  check(kill(-pid, SIGTSTP), "Failed to send SIGTSTP signal");
 }
 
 /*
