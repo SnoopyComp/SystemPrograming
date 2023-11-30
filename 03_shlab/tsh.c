@@ -147,31 +147,24 @@ int main(int argc, char **argv)
 void eval(char *cmdline)
 {
   char *argv[MAXARGS];
-  // char buf[MAXLINE];
   pid_t pid;  
   int bg;
-  // strcpy(buf, cmdline);
+
   bg = parseline(cmdline, argv);
-  // sigset_t mask, prev_all;
-  // sigemptyset(&mask);
-  // sigaddset(&mask,SIGINT);
-  // sigaddset(&mask,SIGCHLD);
-  // sigaddset(&mask,SIGTSTP);
+
   if (argv[0] == NULL)
     return;
-  // printf("  ##first argv : %s\n",argv[0]); //##################
   if( builtin_cmd(argv))
     return;
   sigset_t mask = {};
   sigemptyset(&mask);
   sigaddset(&mask,SIGCHLD);
   sigprocmask(SIG_BLOCK,&mask,NULL);
-  // sigprocmask(SIG_BLOCK, &mask, &prev_all);
   pid = fork();
   if (pid<0)
     unix_error("fork error");
   if(pid==0){
-    setpgid(0,0);//&*******************************************************
+    setpgid(0,0);
     sigprocmask(SIG_UNBLOCK, &mask, NULL);
     if(execve(argv[0],argv,environ)<0){    
       printf("%s: Command not found.\n", argv[0]);
@@ -242,7 +235,6 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv)
 {
-  // printf("  ##get built in %s\n",argv[0]); //########################
   if(!strcmp(argv[0],"quit")){
     exit(0);
     return 1;
@@ -269,23 +261,23 @@ void do_bgfg(char **argv)
 {
   int pid;
   struct job_t *job_ptr;
-  char *p = strstr(argv[1],"%");
-  if(p){
-    int jobid = atoi(p+1);
-    job_ptr = getjobjid(jobs,jobid);
+  char *ptr = strstr(argv[1],"%");
+  if(ptr){
+    int jid = atoi(ptr+1);
+    job_ptr = getjobjid(jobs,jid);
   
-    // if(!job_ptr){
-    //   printf("%%%d: No such job\n",jobid);
-    //   return;
-    // }
+    if(!job_ptr){
+      printf("%%d: No such job\n",jid);
+      return;
+    }
     pid = job_ptr->pid;
   }else if (isdigit(argv[1][0])){
     pid = atoi(argv[1]);
     job_ptr = getjobpid(jobs,pid);
-    // if(!job_ptr){
-    //   printf("(%d): No such process\n",pid);
-    //   return;
-    // }
+    if(job_ptr==NULL){
+      printf("(%d): No such process\n",pid);
+      return;
+    }
   // }else{
   //   printf("%s: err\n",argv[0]);
   //   return;
@@ -308,7 +300,6 @@ void waitfg(pid_t pid)//?????????????????????????
   struct job_t *job_ptr = getjobpid(jobs,pid);
   if (!job_ptr) 
     return;
-  // Busy wait until p_job goes to background or finishes
   while (job_ptr->state == FG){
     sleep(1);
   }
@@ -327,17 +318,16 @@ void sigchld_handler(int sig)
 {
   int status;
   while ((chld_pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
-  // chld_pid = wait(&status);
     struct job_t *job_ptr = getjobpid(jobs,chld_pid);
     if (WIFEXITED(status)) {
         deletejob(jobs,chld_pid);
       }
     else if(WIFSIGNALED(status)){
-      printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
+      printf("Job [%d] (%d) terminated by signal 2\n",pid2jid(chld_pid),chld_pid);
       deletejob(jobs,chld_pid);
     }
     else if(WIFSTOPPED(status)){
-      printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
+      printf("Job [%d] (%d) stopped by signal 20\n",pid2jid(chld_pid),chld_pid);
       getjobpid(jobs,chld_pid)->state = ST;
     }
   }
