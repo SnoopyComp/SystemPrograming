@@ -370,24 +370,22 @@ void waitfg(pid_t pid)//?????????????????????????
 void sigchld_handler(int sig)
 {
   int status;
-  pid_t pid;
-  while (( pid= waitpid(1, &status, WNOHANG | WUNTRACED)) > 0) {
+  while ((chld_pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
   // chld_pid = wait(&status);
     struct job_t *job_ptr = getjobpid(jobs,chld_pid);
     if (WIFEXITED(status)) {
         deletejob(jobs,chld_pid);
       }
     else if(WIFSIGNALED(status)){
-      printf("Job [%d] (%d) terminated by signal 2\n", job_ptr->jid, job_ptr->pid);
+      printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
       deletejob(jobs,chld_pid);
     }
     else if(WIFSTOPPED(status)){
-      printf("Job [%d] (%d) stopped by signal 20\n", job_ptr->jid, job_ptr->pid);
+      printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
       getjobpid(jobs,chld_pid)->state = ST;
     }
   }
-  if(errno == ECHILD) 
-    return;
+
 }
 
 /*
