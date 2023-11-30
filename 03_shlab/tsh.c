@@ -391,20 +391,6 @@ void sigchld_handler(int sig)
   if (errno == ECHILD) { return; }
 }
 
-// Catch ^C (SIGINT) and send it to the foreground job.
-void sigint_handler(int sig) {
-  pid_t pid = fgpid();
-  if (!pid) { return; }
-  check(kill(-pid, SIGINT), "Failed to send SIGINT signal");
-}
-
-// Catch ^Z (SIGTSTP) and send it to the foreground job.
-void sigtstp_handler(int sig) {
-  pid_t pid = fgpid();
-  if (!pid) { return; }
-  check(kill(-pid, SIGTSTP), "Failed to send SIGTSTP signal");
-}
-
 /*
  * sigint_handler - The kernel sends a SIGINT to the shell whenver the
  *    user types ctrl-c at the keyboard.  Catch it and send it along
