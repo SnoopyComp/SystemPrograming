@@ -210,7 +210,7 @@ void eval(char *cmdline)
     addjob(jobs,pid,bg+1,cmdline);
     printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
   }else {
-    sigprocmask(SIG_SETMASK, &prev, NULL);
+    sigprocmask(SIG_SETMASK, &prev_all, NULL);
     waitfg(pid);
   }
   
@@ -349,7 +349,7 @@ void sigchld_handler(int sig)
   }
   else if(WIFSTOPPED(status)){
     printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
-    chld_pid.state = ST;
+    getjobpid(chld_pid)->state = ST;
   }
   return;
 }
