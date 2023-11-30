@@ -42,6 +42,7 @@ char prompt[] = "tsh> ";    /* command line prompt (DO NOT CHANGE) */
 int verbose = 0;            /* if true, print additional output */
 int nextjid = 1;            /* next job ID to allocate */
 char sbuf[MAXLINE];         /* for composing sprintf messages */
+volatile sig_atomic_t chld_pid;
 
 struct job_t {              /* The job struct */
   pid_t pid;              /* job PID */
@@ -52,9 +53,6 @@ struct job_t {              /* The job struct */
 struct job_t jobs[MAXJOBS]; /* The job list */
 /* End global variables */
 
-void newprint(int i){
-  printf("%d",i);
-}
 /* Function prototypes */
 
 /*----------------------------------------------------------------------------
@@ -329,11 +327,12 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig)
 {
-  // int olderrno = errno;
-  // pid_t pid_t;
-  // if((pid_t = wait(NULL))<0)
-  //   sio_error("wait error");
-  
+  int olderrno = errno;
+  int status;
+  chld_pid = wait(&status);
+
+  if(WIFEXITED(status)){
+    printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(chld_pid),chld_pid,sig);
   return;
 }
 
