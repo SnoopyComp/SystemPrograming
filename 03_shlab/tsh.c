@@ -308,6 +308,40 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv)
 {
+  int pid;
+  job_t *job_ptr;
+
+  char *p = strstr(argv[1],"%");
+  if(p){
+    int jobid = atoi(p+1);
+    job_ptr = getjobjid(jobid);
+  
+    if(!job_ptr){
+      printf("%%%d: No such job\n",jobid);
+      return;
+    }
+    pid = p_job->pid;
+  }else if (isdigit(argv[1][0])){
+    pid = atoi(argv[1]);
+    job_ptr = getjobpid(pid);
+
+    if(!p_job){
+      printf("(%d): No such process\n",pid);
+      return;
+    }
+  }else{
+    printf("%s: err\n",argv[0]);
+    return;
+  }
+
+  kill(-pid,SIGCONT);
+  if(!strcmp(argv[0],"fg")){
+    job_ptr->stats = FG;
+    waitfg(pid);
+  }else{
+    job_ptr->state = BG;
+    printf("[%d] (%d) %s",job_ptr->jid, job_ptr->pid, job_ptr->cmdline);
+  }
   return;
 }
 
