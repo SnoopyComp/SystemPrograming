@@ -176,12 +176,12 @@ void eval(char *cmdline)
   pid_t pid;  
   strcpy(buf, cmdline);
   bg = parseline(buf, argv);
-  sigset_t mask, prev_all;
+  // sigset_t mask, prev_all;
 
-  sigemptyset(&mask);
-  sigaddset(&mask,SIGINT);
-  sigaddset(&mask,SIGCHLD);
-  sigaddset(&mask,SIGTSTP);
+  // sigemptyset(&mask);
+  // sigaddset(&mask,SIGINT);
+  // sigaddset(&mask,SIGCHLD);
+  // sigaddset(&mask,SIGTSTP);
 
   if (argv[0] == NULL)
     return;
@@ -189,12 +189,12 @@ void eval(char *cmdline)
    if( builtin_cmd(argv))
     return;
 
-  sigprocmask(SIG_BLOCK, &mask, &prev_all);
+  // sigprocmask(SIG_BLOCK, &mask, &prev_all);
   pid = fork();
   printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
   fflush(stdout);//####################3
   if(pid==0){
-    sigprocmask(SIG_SETMASK, &prev_all, NULL);
+    // sigprocmask(SIG_SETMASK, &prev_all, NULL);
     if(execve(argv[0],argv,environ)<0){
       printf("%s: Command not found.\n", argv[0]);
       exit(1);
@@ -210,7 +210,7 @@ void eval(char *cmdline)
     addjob(jobs,pid,bg+1,cmdline);
     printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
   }else {
-    sigprocmask(SIG_SETMASK, &prev_all, NULL);
+    // sigprocmask(SIG_SETMASK, &prev_all, NULL);
     waitfg(pid);
   }
   
