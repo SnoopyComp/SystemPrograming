@@ -295,10 +295,10 @@ void do_bgfg(char **argv)
 /*
  * waitfg - Block until process pid is no longer the foreground process
  */
-void waitfg(pid_t pid)//?????????????????????????
+void waitfg(pid_t pid)
 {
   struct job_t *job_ptr = getjobpid(jobs,pid);
-  if (!job_ptr) 
+  if (job_ptr==NULL) 
     return;
   while (job_ptr->state == FG){
     sleep(1);
@@ -331,8 +331,8 @@ void sigchld_handler(int sig)
       getjobpid(jobs,chld_pid)->state = ST;
     }
   }
-  if(errno == ECHILD) 
-    return;
+  // if(errno == ECHILD) 
+  //   return;
 }
 
 /*
