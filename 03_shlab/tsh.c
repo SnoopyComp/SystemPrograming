@@ -369,26 +369,24 @@ void waitfg(pid_t pid)//?????????????????????????
  */
 void sigchld_handler(int sig)
 {
- int status;
-  pid_t pid;
-  while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
-    // Check how given process is terminated or stopped
-    struct job_t *p_job = getjobpid(jobs,pid);
-
+  int status;
+  while ((chld_pid = waitpid(1, &status, WNOHANG | WUNTRACED)) > 0) {
+  // chld_pid = wait(&status);
+    struct job_t *job_ptr = getjobpid(jobs,chld_pid);
     if (WIFEXITED(status)) {
-      // Exited normally, print no message
-      deletejob(jobs,pid);
-    } else if (WIFSIGNALED(status)) {
-      // Terminated with signal
-      printf("Job [%d] (%d) terminated by signal 2\n", p_job->jid, p_job->pid);
-      deletejob(jobs,pid);
-    } else if (WIFSTOPPED(status)) {
-      // Stopped by signal
-      printf("Job [%d] (%d) stopped by signal 20\n", p_job->jid, p_job->pid);
-      p_job->state = ST;
+        deletejob(jobs,chld_pid);
+      }
+    else if(WIFSIGNALED(status)){
+      printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
+      deletejob(jobs,chld_pid);
+    }
+    else if(WIFSTOPPED(status)){
+      printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
+      getjobpid(jobs,chld_pid)->state = ST;
     }
   }
-  if (errno == ECHILD) { return; }
+  if(errno == ECHILD) 
+    return;
 }
 
 /*
