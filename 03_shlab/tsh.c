@@ -320,7 +320,7 @@ void do_bgfg(char **argv)
       printf("%%%d: No such job\n",jobid);
       return;
     }
-    pid = p_job->pid;
+    pid = job_ptr->pid;
   }else if (isdigit(argv[1][0])){
     pid = atoi(argv[1]);
     job_ptr = getjobpid(jobs,pid);
