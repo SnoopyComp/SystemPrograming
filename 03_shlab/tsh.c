@@ -378,11 +378,11 @@ void sigchld_handler(int sig)
         deletejob(jobs,chld_pid);
       }
     else if(WIFSIGNALED(status)){
-      printf("Job [%d] (%d) terminated by signal 2\n", p_job->jid, p_job->pid);
+      printf("Job [%d] (%d) terminated by signal 2\n", job_ptr->jid, job_ptr->pid);
       deletejob(jobs,chld_pid);
     }
     else if(WIFSTOPPED(status)){
-      printf("Job [%d] (%d) stopped by signal 20\n", p_job->jid, p_job->pid);
+      printf("Job [%d] (%d) stopped by signal 20\n", job_ptr->jid, job_ptr->pid);
       getjobpid(jobs,chld_pid)->state = ST;
     }
   }
