@@ -171,11 +171,11 @@ int main(int argc, char **argv)
 void eval(char *cmdline)
 {
   char *argv[MAXARGS];
-  // char buf[MAXLINE];
+  char buf[MAXLINE];
   int bg;
   pid_t pid;  
-  // strcpy(buf, cmdline);
-  bg = parseline(cmdline, argv);
+  strcpy(buf, cmdline);
+  bg = parseline(buf, argv);
   // sigset_t mask, prev_all;
 
   // sigemptyset(&mask);
@@ -186,33 +186,35 @@ void eval(char *cmdline)
   if (argv[0] == NULL)
     return;
   // printf("  ##first argv : %s\n",argv[0]); //##################
-  if( builtin_cmd(argv))
-    return;
-  sigset_t mask = {};
-  sigemptyset(&mask);
-  sigaddset(&mask,SIGCHLD);
-  sigprocmask(SIG_BLOCK,&mask,NULL);
+   if( !builtin_cmd(argv)){
 
   // sigprocmask(SIG_BLOCK, &mask, &prev_all);
   pid = fork();
-  if (pid<0)
-    unix_error("fork error");
+  printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
+  fflush(stdout);//####################3
   if(pid==0){
-    setpgid(0,0);//&*******************************************************
-    sigprocmask(SIG_UNBLOCK, &mask, NULL);
-    if(execve(argv[0],argv,environ)<0){    
+    // sigprocmask(SIG_SETMASK, &prev_all, NULL);
+    if(execve(argv[0],argv,environ)<0){
       printf("%s: Command not found.\n", argv[0]);
       exit(1);
     }
   }
-  addjob(jobs,pid,bg+1,cmdline);
-  sigprocmask(SIG_UNBLOCK, &mask, NULL);
-  if(!bg){
-    waitfg(pid);
-  }else{
-    printf("[%d] (%d) %s",pid2jid(pid),pid,cmdline);
-  }
+  else if(pid<0)
+    unix_error("fork error");
+  else
+    printf("  ##parent\n"); //##################
+ 
 
+  if(bg){
+    addjob(jobs,pid,bg+1,cmdline);
+    printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
+  }else {
+    // sigprocmask(SIG_SETMASK, &prev_all, NULL);
+    // waitfg(pid);
+  }
+   }
+  
+  return;
 }
 
 /*
@@ -278,8 +280,9 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv)
 {
-  // printf("  ##get built in %s\n",argv[0]); //########################
+  printf("  ##get built in %s\n",argv[0]); //########################
   if(!strcmp(argv[0],"quit")){
+    deletejob(jobs, getpid());
     exit(0);
     return 1;
   }
@@ -313,25 +316,25 @@ void do_bgfg(char **argv)
     int jobid = atoi(p+1);
     job_ptr = getjobjid(jobs,jobid);
   
-    // if(!job_ptr){
-    //   printf("%%%d: No such job\n",jobid);
-    //   return;
-    // }
+    if(!job_ptr){
+      printf("%%%d: No such job\n",jobid);
+      return;
+    }
     pid = job_ptr->pid;
   }else if (isdigit(argv[1][0])){
     pid = atoi(argv[1]);
     job_ptr = getjobpid(jobs,pid);
 
-    // if(!job_ptr){
-    //   printf("(%d): No such process\n",pid);
-    //   return;
-    // }
-  // }else{
-  //   printf("%s: err\n",argv[0]);
-  //   return;
+    if(!job_ptr){
+      printf("(%d): No such process\n",pid);
+      return;
+    }
+  }else{
+    printf("%s: err\n",argv[0]);
+    return;
   }
 
-  kill(-pid,SIGCONT);
+  kill(pid,SIGCONT);
   if(!strcmp(argv[0],"fg")){
     job_ptr->state = FG;
     waitfg(pid);
@@ -351,9 +354,8 @@ void waitfg(pid_t pid)//?????????????????????????
   if (!job_ptr) 
     return;
   // Busy wait until p_job goes to background or finishes
-  while (job_ptr->state == FG){
-    sleep(1);
-  }
+  while (job_ptr->state == FG) { sleep(1); }
+  return;
 }
 
 /*****************
@@ -369,6 +371,7 @@ void waitfg(pid_t pid)//?????????????????????????
  */
 void sigchld_handler(int sig)
 {
+  int olderrno = errno;
   int status;
   while ((chld_pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
   // chld_pid = wait(&status);
@@ -385,7 +388,7 @@ void sigchld_handler(int sig)
       getjobpid(jobs,chld_pid)->state = ST;
     }
   }
-
+  return;
 }
 
 /*
@@ -413,8 +416,7 @@ void sigtstp_handler(int sig)
   if(!tmp)
     return;
   if(kill(tmp,SIGTSTP)==-1)
-    unix_error("Failed to send SIGTSPT signal"); 
-}
+    unix_error("Failed to send SIGINT signal"); }
 
 /*********************
  * End signal handlers
