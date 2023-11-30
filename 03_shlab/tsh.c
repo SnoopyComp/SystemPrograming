@@ -176,24 +176,22 @@ void eval(char *cmdline)
   char buf[MAXLINE];
   int bg;
   pid_t pid;
+  sigset_t mask_all, prev_all;
 
   strcpy(buf, cmdline);
   bg = parseline(buf, argv);
 
-  Signal(SIGINT,  sigint_handler);   /* ctrl-c */
-  Signal(SIGTSTP, sigtstp_handler);  /* ctrl-z */
-  Signal(SIGCHLD, sigchld_handler);  /* Terminated or stopped child */
   if (argv[0] == NULL)
     return;
   // printf("  ##first argv : %s\n",argv[0]); //##################
   if(!builtin_cmd(argv)){
+    Sigprocmask(SIG_BLOCK, &mask_all, &prev_all);
     pid = fork();
     printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
-    fflush(stdout);
+    fflush(stdout);//####################3
     if(pid==0){
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
-        deletejob(jobs, getpid());
         exit(0);
       }
     }
@@ -202,14 +200,18 @@ void eval(char *cmdline)
     else
       printf("  ##parent\n"); //##################
 
+    Sigprocmask( SIG_SETMASK, &prev_all, NULL);
+
     if(!bg){
       int status;
       if(waitpid(pid, &status, 0)<0)
         unix_error("waitfg: waitpid error");
     }
     else {
+      Sigprocmask(SIG_BLOCK, &mask_all, &prev_all);
       addjob(jobs,pid,bg+1,cmdline);
       printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
+      Sigprocmask(SIG_SETMASK, &prev_all, NULL);
     }
   }
   return;
@@ -327,6 +329,11 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig)
 {
+  // int olderrno = errno;
+  // pid_t pid_t;
+  // if((pid_t = wait(NULL))<0)
+  //   sio_error("wait error");
+  
   return;
 }
 
@@ -338,8 +345,12 @@ void sigchld_handler(int sig)
 void sigint_handler(int sig)
 {
   struct job_t *jptr = getjobpid(jobs,fgpid(jobs));
-  printf("Job [%d] (%d) terminated by signal %d\n",jptr->jid,jptr->pid,sig);
-  _exit(sig);
+  for (int i=1; i<= maxjid(jobs); i++)
+    if(jobs[i].pid!=0){
+      printf("Job [%d] (%d) terminated by signal %d\n",i, jobs[i].pid, sig);
+      kill(jobs[i].pid,pid);
+    }
+  _exit(0);
 }
 
 /*
