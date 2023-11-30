@@ -186,8 +186,7 @@ void eval(char *cmdline)
   if (argv[0] == NULL)
     return;
   // printf("  ##first argv : %s\n",argv[0]); //##################
-   if( builtin_cmd(argv))
-    return;
+   if( builtin_cmd(argv)){
 
   // sigprocmask(SIG_BLOCK, &mask, &prev_all);
   pid = fork();
@@ -211,8 +210,9 @@ void eval(char *cmdline)
     printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
   }else {
     // sigprocmask(SIG_SETMASK, &prev_all, NULL);
-    waitfg(pid);
+    // waitfg(pid);
   }
+   }
   
   return;
 }
