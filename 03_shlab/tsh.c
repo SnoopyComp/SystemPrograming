@@ -190,7 +190,7 @@ void eval(char *cmdline)
     if(pid==0){
       if(execve(argv[0],argv,environ)<0){
         printf("%s: Command not found.\n", argv[0]);
-        exit(0);
+        exit(1);
       }
     }
     else if(pid<0)
@@ -199,12 +199,10 @@ void eval(char *cmdline)
       printf("  ##parent\n"); //##################
 
     sigprocmask( SIG_SETMASK, &prev_all, NULL);
+    
 
-    if(!bg){
-      int status;
-      if(waitpid(pid, &status, 0)<0)
-        unix_error("waitfg: waitpid error");
-    }
+    if(!bg)
+      waitfg(pid);
     else {
       sigprocmask(SIG_BLOCK, &mask_all, &prev_all);
       addjob(jobs,pid,bg+1,cmdline);
@@ -313,6 +311,11 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
+  struct job_t *job_ptr = getjobpid(pid);
+  if (!job_ptr) 
+    { return; }
+  // Busy wait until p_job goes to background or finishes
+  while (job_ptr->state == FG) { sleep(1); }
   return;
 }
 
@@ -332,8 +335,10 @@ void sigchld_handler(int sig)
   int olderrno = errno;
   int status;
   chld_pid = wait(&status);
-
-  if(WIFSIGNALED(status)){
+  if (WIFEXITED(status)) {
+      deletejob(jobs,chld_pid);
+    }
+  else if(WIFSIGNALED(status)){
     printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
     deletejob(jobs,chld_pid);
   }
