@@ -197,13 +197,13 @@ void eval(char *cmdline)
   pid = fork();
   if (pid<0)
     unix_error("fork error");
-  if(!pid){
+  if(pid==0){
     setpgid(0,0);//&*******************************************************
     sigprocmask(SIG_UNBLOCK, &mask, NULL);
-    execve(argv[0],argv,environ);
-    
-    printf("%s: Command not found.\n", argv[0]);
-    exit(1);
+    if(execve(argv[0],argv,environ)<0){    
+      printf("%s: Command not found.\n", argv[0]);
+      exit(1);
+    }
   }
   addjob(jobs,pid,bg+1,cmdline);
   sigprocmask(SIG_UNBLOCK, &mask, NULL);
@@ -278,7 +278,7 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv)
 {
-  printf("  ##get built in %s\n",argv[0]); //########################
+  // printf("  ##get built in %s\n",argv[0]); //########################
   if(!strcmp(argv[0],"quit")){
     exit(0);
     return 1;
@@ -351,8 +351,8 @@ void waitfg(pid_t pid)//?????????????????????????
   if (!job_ptr) 
     return;
   // Busy wait until p_job goes to background or finishes
-  while (job_ptr->state == FG)
-  sleep(1);
+  // while (job_ptr->state == FG)
+  // sleep(1);
 }
 
 /*****************
@@ -412,7 +412,8 @@ void sigtstp_handler(int sig)
   if(!tmp)
     return;
   if(kill(tmp,SIGTSTP)==-1)
-    unix_error("Failed to send SIGINT signal"); }
+    unix_error("Failed to send SIGTSPT signal"); 
+}
 
 /*********************
  * End signal handlers
