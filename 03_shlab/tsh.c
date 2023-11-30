@@ -267,7 +267,7 @@ void do_bgfg(char **argv)
     job_ptr = getjobjid(jobs,jid);
   
     if(!job_ptr){
-      printf("%%d: No such job\n",jid);
+      printf("\%%d: No such job\n",jid);
       return;
     }
     pid = job_ptr->pid;
