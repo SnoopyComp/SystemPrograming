@@ -331,9 +331,12 @@ void sigchld_handler(int sig)
   int status;
   chld_pid = wait(&status);
 
-  if(WIFEXITED(status)){
-    printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(chld_pid),chld_pid,sig);
+  if(WIFSIGNALED(status)){
+    printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
     deletejob(jobs,chld_pid);
+  }
+  else if(WIFSTOPPED(status)){
+    printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(chld_pid),chld_pid,WTERMSIG(status));
   }
   return;
 }
@@ -348,7 +351,6 @@ void sigint_handler(int sig)
   struct job_t *jptr = getjobpid(jobs,fgpid(jobs));
   for (int i=1; i<= maxjid(jobs); i++)
     if(jobs[i].pid!=0){
-      printf("Job [%d] (%d) terminated by signal %d\n",i, jobs[i].pid, sig);
       kill(jobs[i].pid,sig);
     }
   _exit(0);
