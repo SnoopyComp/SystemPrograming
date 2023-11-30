@@ -180,6 +180,9 @@ void eval(char *cmdline)
   strcpy(buf, cmdline);
   bg = parseline(buf, argv);
 
+  Signal(SIGINT,  sigint_handler);   /* ctrl-c */
+  Signal(SIGTSTP, sigtstp_handler);  /* ctrl-z */
+  Signal(SIGCHLD, sigchld_handler);  /* Terminated or stopped child */
   if (argv[0] == NULL)
     return;
   // printf("  ##first argv : %s\n",argv[0]); //##################
@@ -334,7 +337,7 @@ void sigchld_handler(int sig)
 void sigint_handler(int sig)
 {
   struct job_t *jptr = getjobpid(jobs,fgpid(jobs));
-  Sio_puts("Job [%d] (%d) terminated by signal %d\n",jptr->jid,jptr->pid,sig);
+  printf("Job [%d] (%d) terminated by signal %d\n",jptr->jid,jptr->pid,sig);
   fflush(stdout);
   exit(0);
 }
