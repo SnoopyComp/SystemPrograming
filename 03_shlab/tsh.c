@@ -333,7 +333,7 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig)
 {
-  struct job_t *jptr = getjobpid(fgpid(jobs));
+  struct job_t *jptr = getjobpid(jobs,fgpid(jobs));
   printf("Job [%d] (%d) terminated by signal 2\n",jptr->jid,jptr->pid);
   exit(0);
   return;
