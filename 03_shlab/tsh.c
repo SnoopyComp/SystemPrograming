@@ -171,11 +171,11 @@ int main(int argc, char **argv)
 void eval(char *cmdline)
 {
   char *argv[MAXARGS];
-  char buf[MAXLINE];
+  // char buf[MAXLINE];
   int bg;
   pid_t pid;  
-  strcpy(buf, cmdline);
-  bg = parseline(buf, argv);
+  // strcpy(buf, cmdline);
+  bg = parseline(cmdline, argv);
   // sigset_t mask, prev_all;
 
   // sigemptyset(&mask);
@@ -198,6 +198,7 @@ void eval(char *cmdline)
   if (pid<0)
     unix_error("fork error");
   if(!pid){
+    setpgid(0,0);//&*******************************************************
     sigprocmask(SIG_UNBLOCK, &mask, NULL);
     execve(argv[0],argv,environ);
     
