@@ -39,7 +39,7 @@
 /* Global variables */
 extern char **environ;      /* defined in libc */
 char prompt[] = "tsh> ";    /* command line prompt (DO NOT CHANGE) */
-int verbose = 1;            /* if true, print additional output */
+int verbose = 0;            /* if true, print additional output */
 int nextjid = 1;            /* next job ID to allocate */
 char sbuf[MAXLINE];         /* for composing sprintf messages */
 
@@ -204,7 +204,7 @@ void eval(char *cmdline)
         unix_error("waitfg: waitpid error");
     }
     else {
-      addjob(jobs,pid,bg,cmdline);
+      addjob(jobs,pid,bg+1,cmdline);
       printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
     }
   }
@@ -333,6 +333,9 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig)
 {
+  struct job_t *jptr = getjobpid(fgpid(jobs));
+  printf("Job [%d] (%d) terminated by signal 2\n",jptr->jid,jptr->pid);
+  exit(0);
   return;
 }
 
@@ -433,7 +436,7 @@ pid_t fgpid(struct job_t *jobs) {
     if (jobs[i].state == FG)
       return jobs[i].pid;
   return 0;
-}
+} 
 
 /* getjobpid  - Find a job (by PID) on the job list */
 struct job_t *getjobpid(struct job_t *jobs, pid_t pid) {
