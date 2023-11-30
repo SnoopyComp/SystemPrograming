@@ -325,7 +325,7 @@ void do_bgfg(char **argv)
     pid = atoi(argv[1]);
     job_ptr = getjobpid(jobs,pid);
 
-    if(!p_job){
+    if(!job_ptr){
       printf("(%d): No such process\n",pid);
       return;
     }
