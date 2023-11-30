@@ -288,9 +288,11 @@ int builtin_cmd(char **argv)
     return 1;
   }
   else if(!strcmp(argv[0],"fg")){
+    do_bgfg(argv);
     return 1;
   }
   else if(!strcmp(argv[0],"bg")){
+    do_
     return 1;
   }
   
@@ -348,12 +350,11 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig)
 {
-  struct job_t *jptr = getjobpid(jobs,fgpid(jobs));
-  for (int i=1; i<= maxjid(jobs); i++)
-    if(jobs[i].pid!=0){
-      kill(jobs[i].pid,sig);
-    }
-  _exit(0);
+  pid_t tmp = fgpid();
+  if(!tmp)
+    return;
+  if(kill(-tmp,SIGINT)==-1)
+    unix_error("Failed to send SIGINT signal"); 
 }
 
 /*
@@ -363,8 +364,11 @@ void sigint_handler(int sig)
  */
 void sigtstp_handler(int sig)
 {
-  return;
-}
+  pid_t tmp = fgpid();
+  if(!tmp)
+    return;
+  if(kill(-tmp,SIGTSTP)==-1)
+    unix_error("Failed to send SIGINT signal"); }
 
 /*********************
  * End signal handlers
