@@ -185,7 +185,7 @@ void eval(char *cmdline)
     return;
   // printf("  ##first argv : %s\n",argv[0]); //##################
   if(!builtin_cmd(argv)){
-    Sigprocmask(SIG_BLOCK, &mask_all, &prev_all);
+    sigprocmask(SIG_BLOCK, &mask_all, &prev_all);
     pid = fork();
     printf("  ##forked! child: %d  current: %d  bg: %d \n",pid,getpid(),bg);//######################3
     fflush(stdout);//####################3
@@ -200,7 +200,7 @@ void eval(char *cmdline)
     else
       printf("  ##parent\n"); //##################
 
-    Sigprocmask( SIG_SETMASK, &prev_all, NULL);
+    sigprocmask( SIG_SETMASK, &prev_all, NULL);
 
     if(!bg){
       int status;
@@ -208,10 +208,10 @@ void eval(char *cmdline)
         unix_error("waitfg: waitpid error");
     }
     else {
-      Sigprocmask(SIG_BLOCK, &mask_all, &prev_all);
+      sigprocmask(SIG_BLOCK, &mask_all, &prev_all);
       addjob(jobs,pid,bg+1,cmdline);
       printf("[%d] (%d) %s",pid2jid(pid),getpid(),cmdline);
-      Sigprocmask(SIG_SETMASK, &prev_all, NULL);
+      sigprocmask(SIG_SETMASK, &prev_all, NULL);
     }
   }
   return;
@@ -348,7 +348,7 @@ void sigint_handler(int sig)
   for (int i=1; i<= maxjid(jobs); i++)
     if(jobs[i].pid!=0){
       printf("Job [%d] (%d) terminated by signal %d\n",i, jobs[i].pid, sig);
-      kill(jobs[i].pid,pid);
+      kill(jobs[i].pid,sig);
     }
   _exit(0);
 }
