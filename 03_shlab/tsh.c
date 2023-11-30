@@ -311,7 +311,7 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
-  struct job_t *job_ptr = getjobpid(pid);
+  struct job_t *job_ptr = getjobpid(jobs,pid);
   if (!job_ptr) 
     { return; }
   // Busy wait until p_job goes to background or finishes
