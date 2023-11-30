@@ -350,7 +350,7 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig)
 {
-  pid_t tmp = fgpid();
+  pid_t tmp = fgpid(jobs);
   if(!tmp)
     return;
   if(kill(-tmp,SIGINT)==-1)
@@ -364,7 +364,7 @@ void sigint_handler(int sig)
  */
 void sigtstp_handler(int sig)
 {
-  pid_t tmp = fgpid();
+  pid_t tmp = fgpid(jobs);
   if(!tmp)
     return;
   if(kill(-tmp,SIGTSTP)==-1)
