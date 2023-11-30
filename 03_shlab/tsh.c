@@ -386,8 +386,8 @@ void sigchld_handler(int sig)
       getjobpid(jobs,chld_pid)->state = ST;
     }
   }
-  // if(errno == ECHILD) 
-  //   return;
+  if(errno == ECHILD) 
+    return;
 }
 
 /*
