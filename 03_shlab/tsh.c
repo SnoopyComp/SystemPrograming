@@ -171,11 +171,11 @@ int main(int argc, char **argv)
 void eval(char *cmdline)
 {
   char *argv[MAXARGS];
-  // char buf[MAXLINE];
+  char buf[MAXLINE];
   int bg;
   pid_t pid;  
-  // strcpy(buf, cmdline);
-  bg = parseline(cmdline, argv);
+  strcpy(buf, cmdline);
+  bg = parseline(buf, argv);
   // sigset_t mask, prev_all;
 
   // sigemptyset(&mask);
